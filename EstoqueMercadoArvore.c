@@ -1,118 +1,28 @@
-/**
- * @file EstoqueMercadoArvore.c
- * @brief Implementação de uma estrutura de árvore binária para gerenciar itens de estoque em um mercado.
- * 
- * Este arquivo contém funções para criar, manipular e persistir uma estrutura de árvore binária
- * para gerenciar itens de estoque. Os itens são categorizados por tipo e armazenados em arquivos separados.
- * A árvore suporta operações como inserção, travessia e remoção de itens vencidos.
- * 
- * 
- */
+/**************************************************************************************************
+ * Nome: TAD - Árvore Binária de Busca (ABB) para Estoque de Supermercado
+ * Descrição: Essa TAD foi criada com o objetivo de gerenciar o estoque de um supermercado,
+ *          utilizando uma árvore binária de busca para armazenar os itens e suas informações.
+ * Autor: Isadora Gesaro Rezende,
+          Jeovanni Conservani Da Silva,
+          Khevyn Henrique G. T. Alves,
+          Leonardo de Arruda Macedo
+ * Data da última modificação: 08/05/2025
+ *************************************************************************************************/
 
- /**
-    * @brief Inicializa a árvore binária, definindo a raiz como NULL.
-    * 
-    * @param raiz Ponteiro para a raiz da árvore.
-    */
-void criarArvore(Arvore *raiz);
 
-/**
- * @brief Aloca memória para um novo nó da árvore e o inicializa com o item fornecido.
- * 
- * @param item O item a ser armazenado no novo nó.
- * @return Ponteiro para o nó recém-alocado.
- */
-No* alocarNo(Item item);
-
-/**
- * @brief Libera a memória alocada para toda a árvore.
- * 
- * @param raiz A raiz da árvore a ser liberada.
- */
-void liberarArvore(Arvore raiz);
-
-/**
- * @brief Insere um novo item na árvore binária.
- * 
- * @param raiz Ponteiro para a raiz da árvore.
- * @param item O item a ser inserido.
- */
-void inserirItem(Arvore *raiz, Item item);
-
-/**
- * @brief Exibe o conteúdo da árvore binária em uma travessia em ordem.
- * 
- * @param raiz A raiz da árvore a ser exibida.
- */
-void mostrarArvore(Arvore raiz);
-
-/**
- * @brief Organiza os itens da árvore por tipo e os grava em arquivos correspondentes.
- * 
- * Os itens são categorizados em tipos predefinidos (ex.: "fruta", "bebida") e gravados
- * em arquivos separados. Itens com tipos desconhecidos não são gravados.
- * 
- * @param raiz A raiz da árvore a ser organizada e gravada em arquivos.
- */
-void organizarEGravarArvore(Arvore raiz);
-
-/**
- * @brief Remove itens vencidos de um arquivo e atualiza o arquivo.
- * 
- * Lê itens do arquivo especificado, remove itens vencidos e grava os itens restantes
- * em um arquivo temporário, que substitui o arquivo original.
- * 
- * @param nomeArquivo O nome do arquivo a ser processado.
- */
-void removerItensVencidosArvore(const char *nomeArquivo);
-
-/**
- * @brief Conta o número de itens em um arquivo.
- * 
- * @param nomeArquivo O nome do arquivo a ser contado.
- * @return O número de itens no arquivo.
- */
-int contarItensNoArquivo(const char *nomeArquivo);
-
-/**
- * @brief Carrega itens de um arquivo em uma árvore binária.
- * 
- * Lê itens do arquivo "ListaItens" e os insere em uma árvore binária.
- * O número de itens lidos é limitado por MAX_ITENS_INSERIR.
- * 
- * @param quantidadeLida Ponteiro para um inteiro para armazenar o número de itens lidos.
- * @return A raiz da árvore binária contendo os itens carregados.
- */
-Arvore carregarItensEmArvore(int *quantidadeLida);
-
-/**
- * @brief Cria o arquivo "ListaItens" com dados de exemplo, caso ele não exista.
- * 
- * Gera uma lista de itens com datas de vencimento aleatórias e tipos predefinidos,
- * e os grava no arquivo "ListaItens".
- */
-void criarListaItensSeNaoExistir();
-
-/**
- * @brief Exibe o conteúdo de um arquivo.
- * 
- * Lê e imprime os itens armazenados no arquivo especificado.
- * 
- * @param nomeArquivo O nome do arquivo a ser exibido.
- */
 void mostrarArquivo(const char *nomeArquivo);
 #include "EstoqueMercadoArvore.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+#include <time.h> // Biblioteca responsável por geral datas de vencimento aleatórias
 
 
 
 void criarArvore(Arvore *raiz) {
     *raiz = NULL;
 }
-
+/// Cria a árvore inicializando a raiz como NULL
 No* alocarNo(Item item) {
     No* novo = (No*)malloc(sizeof(No));
     if (novo == NULL) {
@@ -124,6 +34,8 @@ No* alocarNo(Item item) {
     return novo;
 }
 
+// Aloca memória para um novo nó da árvore e o inicializa com o item fornecido
+// Libera a memória alocada para toda a árvore, percorrendo-a recursivamente
 void liberarArvore(Arvore raiz) {
     if (raiz != NULL) {
         liberarArvore(raiz->esq);
@@ -134,39 +46,43 @@ void liberarArvore(Arvore raiz) {
 
 void inserirItem(Arvore *raiz, Item item) {
     if (*raiz == NULL) {
-        *raiz = alocarNo(item);
+        *raiz = alocarNo(item); // Aloca um novo nó e o insere na árvore se a raiz for NULL
     } else {
-        if (strcmp(item.nome, (*raiz)->item.nome) < 0)
-            inserirItem(&(*raiz)->esq, item);
+        if (strcmp(item.nome, (*raiz)->item.nome) < 0) // Se não for NULL, compara o nome do item
+            inserirItem(&(*raiz)->esq, item); // Se o nome do item for menor, insere na subárvore esquerda
         else
-            inserirItem(&(*raiz)->dir, item);
+            inserirItem(&(*raiz)->dir, item); // Caso contrário, insere na subárvore direita
     }
 }
 
 void mostrarArvore(Arvore raiz) {
     if (raiz != NULL) {
-        mostrarArvore(raiz->esq);
+        mostrarArvore(raiz->esq); // Mostra a subárvore esquerda se existir
         printf("Nome: %s | Tipo: %s | Vencimento: %d | Setor: %s\n",
                raiz->item.nome, raiz->item.tipo, raiz->item.vencimento, raiz->item.setor);
-        mostrarArvore(raiz->dir);
+        mostrarArvore(raiz->dir); // Mostra a subárvore direita se existir
     }
 }
 
+// Funcao que organiza os itens da árvore por tipo e os grava em arquivos correspondentes
+// Os itens são categorizados em tipos predefinidos (ex.: "fruta", "bebida") e gravados
 void organizarEGravarArvore(Arvore raiz) {
     const char *nomesArquivos[5] = {
-        "ListaFrutas", "ListaBebidas", "ListaDoces", "ListaSalgados", "ListaEnlatados"
+        "ListaFrutasArvore", "ListaBebidasArvore", "ListaDocesArvore", "ListaSalgadosArvore", "ListaEnlatadosArvore"
     };
 
     if (raiz == NULL)
         return;
 
-    organizarEGravarArvore(raiz->esq);
+    organizarEGravarArvore(raiz->esq); // Chamada recursiva para a subárvore esquerda
 
     if (raiz->item.vencimento > 0) {
-        const char *nomeArquivo = NULL;
-
+        const char *nomeArquivo = NULL; // Inicializa o nome do arquivo como NULL
+        // Verifica o tipo do item e define o nome do arquivo correspondente
         printf("Item: %s | Tipo detectado: [%s]\n", raiz->item.nome, raiz->item.tipo);
 
+        // "Conjunto de ifs" para verificar o tipo do item e definir o nome do arquivo correspondente
+        // Se o tipo do item for "fruta", grava no arquivo "ListaFrutasArvore" e por aí vai...
         if (strcmp(raiz->item.tipo, "fruta") == 0) nomeArquivo = nomesArquivos[0];
         else if (strcmp(raiz->item.tipo, "bebida") == 0) nomeArquivo = nomesArquivos[1];
         else if (strcmp(raiz->item.tipo, "doce") == 0) nomeArquivo = nomesArquivos[2];
@@ -177,103 +93,106 @@ void organizarEGravarArvore(Arvore raiz) {
         }
 
         if (nomeArquivo != NULL) {
-            FILE *arquivo = fopen(nomeArquivo, "ab");
+            FILE *arquivo = fopen(nomeArquivo, "ab"); // Se o nomeArquivo for diferente de NULL, abre o arquivo para gravação
             if (arquivo == NULL) {
                 printf("Erro ao abrir o arquivo %s para gravacao.\n", nomeArquivo);
             } else {
-                fwrite(&(raiz->item), sizeof(Item), 1, arquivo);
-                fclose(arquivo);
-                printf("Gravado: %s em %s\n", raiz->item.nome, nomeArquivo);
+                fwrite(&(raiz->item), sizeof(Item), 1, arquivo); // Se não for NULL, grava o item no arquivo (fwrite é responsável por gravar o item no arquivo)
+                fclose(arquivo); // Fecha o arquivo após a gravação
+                printf("Gravado: %s em %s\n", raiz->item.nome, nomeArquivo); // Exibe mensagem de sucesso
             }
         }
     }
 
-    organizarEGravarArvore(raiz->dir);
+    organizarEGravarArvore(raiz->dir); // Chamada recursiva para a subárvore direita
 }
-
 void removerItensVencidosArvore(const char *nomeArquivo) {
-    FILE *arquivoOriginal = fopen(nomeArquivo, "rb");
-    FILE *arquivoTemp = fopen("temp.bin", "wb");
-    Item item;
+    FILE *arquivoOriginal = fopen(nomeArquivo, "rb"); // Abre o arquivo original para leitura
+    FILE *arquivoTemp = fopen("temp.bin", "wb"); // Abre um arquivo temporário para gravação
+    Item item; // Declaração de um item para leitura e gravação
 
     if (arquivoOriginal == NULL || arquivoTemp == NULL) {
-        printf("Erro ao abrir arquivos para remocao.\n");
+        printf("Erro ao abrir arquivos para remocao.\n"); // Verifica se os arquivos foram abertos corretamente
         return;
     }
 
-    while (fread(&item, sizeof(Item), 1, arquivoOriginal) == 1) {
+    while (fread(&item, sizeof(Item), 1, arquivoOriginal) == 1) { // Enquanto houver itens no arquivo original, lê um item e grava no arquivo temporário
+        // Verifica se o item não está vencido (vencimento > 0) e grava no arquivo temporário
         if (item.vencimento > 0) {
-            fwrite(&item, sizeof(Item), 1, arquivoTemp);
+            fwrite(&item, sizeof(Item), 1, arquivoTemp); // Grava o item no arquivo temporário se não estiver vencido
         }
     }
 
     fclose(arquivoOriginal);
     fclose(arquivoTemp);
     remove(nomeArquivo);
-    rename("temp.bin", nomeArquivo);
+    rename("temp.bin", nomeArquivo); // Remove o arquivo original e renomeia o temporário para o nome do original
 }
 
 int contarItensNoArquivo(const char *nomeArquivo) {
-    FILE *arquivo = fopen(nomeArquivo, "rb");
-    if (arquivo == NULL) return 0;
+    FILE *arquivo = fopen(nomeArquivo, "rb"); // Abre o arquivo para leitura
+    if (arquivo == NULL) return 0; // Se o arquivo não existir, retorna 0
 
     int contador = 0;
     Item item;
-    while (fread(&item, sizeof(Item), 1, arquivo) == 1) {
+    while (fread(&item, sizeof(Item), 1, arquivo) == 1) { // Enquanto houver itens no arquivo, lê um item e incrementa o contador
         contador++;
     }
     fclose(arquivo);
-    return contador;
+    return contador; // Retorna o número total de itens lidos do arquivo
 }
 
 Arvore carregarItensEmArvore(int *quantidadeLida) {
-    FILE *arquivo = fopen("ListaItens", "rb");
+    FILE *arquivo = fopen("ListaItens", "rb"); // Abre o arquivo "ListaItens" para leitura, onde estão os itens
     if (arquivo == NULL) return NULL;
 
-    Arvore raiz = NULL;
+    Arvore raiz = NULL; // Inicializa a raiz da árvore como NULL
     Item item;
-    *quantidadeLida = 0;
+    *quantidadeLida = 0; // Inicializa a quantidade lida como 0
 
+    // Enquanto houver itens no arquivo, lê um item e insere na árvore
     while (fread(&item, sizeof(Item), 1, arquivo) == 1 && *quantidadeLida < MAX_ITENS_INSERIR) {
-        inserirItem(&raiz, item);
+        inserirItem(&raiz, item); // Insere o item na árvore e incrementa a quantidade lida
         (*quantidadeLida)++;
     }
 
     fclose(arquivo);
-    return raiz;
+    return raiz; // Retorna a raiz da árvore com os itens carregados
 }
 
 void criarListaItensSeNaoExistir() {
-    FILE *arquivo = fopen("ListaItens", "rb");
+    FILE *arquivo = fopen("ListaItens", "rb"); // Tenta abrir o arquivo "ListaItens" para leitura
     if (arquivo != NULL) {
         fclose(arquivo);
         return;
     }
 
-    arquivo = fopen("ListaItens", "wb");
+    arquivo = fopen("ListaItens", "wb"); // Se o arquivo não existir, cria um novo arquivo para gravação
+    // Se o arquivo não puder ser criado, exibe mensagem de erro e retorna
     if (arquivo == NULL) {
         printf("Erro ao criar ListaItens.\n");
         return;
     }
 
     Item item;
-    const char *tipos[5] = {"fruta", "bebida", "doce", "salgado", "enlatado"};
+    const char *tipos[5] = {"fruta", "bebida", "doce", "salgado", "enlatado"}; // Tipos de itens predefinidos
+    // Inicializa o gerador de números aleatórios com a hora atual
     srand(time(NULL));
 
-    for (int i = 0; i < MAX_ITENS_INSERIR; i++) {
-        int tipoIndex = i % 5;
-        strcpy(item.tipo, tipos[tipoIndex]);
-        sprintf(item.nome, "Item_%d", i + 1);
-        item.vencimento = (i % 10 == 0) ? 0 : (1 + rand() % 30);
-        sprintf(item.setor, "Setor %c", 'A' + tipoIndex);
-        fwrite(&item, sizeof(Item), 1, arquivo);
+    for (int i = 0; i < MAX_ITENS_INSERIR; i++) { // Gera itens aleatórios para o arquivo "ListaItens" quantidade definida em EstoqueMercadoArvore.h
+        int tipoIndex = i % 5; // Gera um índice aleatório para selecionar o tipo do item
+        strcpy(item.tipo, tipos[tipoIndex]); // Copia o tipo selecionado para o item
+        sprintf(item.nome, "Item_%d", i + 1); // Gera um nome para o item
+        item.vencimento = (i % 10 == 0) ? 0 : (1 + rand() % 30); // Gera uma data de vencimento aleatória entre 1 e 30 dias, ou 0 para itens vencidos
+        sprintf(item.setor, "Setor %c", 'A' + tipoIndex); // Gera um setor para o item baseado no índice do tipo
+        fwrite(&item, sizeof(Item), 1, arquivo); // Grava o item no arquivo
     }
 
     fclose(arquivo);
 }
 
 void mostrarArquivo(const char *nomeArquivo) {
-    FILE *arquivo = fopen(nomeArquivo, "rb");
+    FILE *arquivo = fopen(nomeArquivo, "rb"); // Abre o arquivo para leitura
     Item item;
 
     if (arquivo == NULL) {
@@ -282,6 +201,7 @@ void mostrarArquivo(const char *nomeArquivo) {
     }
 
     printf("Conteudo do arquivo %s:\n", nomeArquivo);
+    // Enquanto houver itens no arquivo, lê um item e exibe suas informações
     while (fread(&item, sizeof(Item), 1, arquivo) == 1) {
         printf("Nome: %s | Tipo: %s | Vencimento: %d | Setor: %s\n",
                item.nome, item.tipo, item.vencimento, item.setor);
