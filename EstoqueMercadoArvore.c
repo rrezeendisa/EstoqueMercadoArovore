@@ -6,22 +6,20 @@
           Jeovanni Conservani Da Silva,
           Khevyn Henrique G. T. Alves,
           Leonardo de Arruda Macedo
- * Data da última modificação: 08/05/2025
+ * Data da última modificação: 09/05/2025
  *************************************************************************************************/
-
 
 void mostrarArquivo(const char *nomeArquivo);
 #include "EstoqueMercadoArvore.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h> // Biblioteca responsável por geral datas de vencimento aleatórias
-
-
+#include <time.h> // Biblioteca responsável por gerar datas de vencimento aleatórias
 
 void criarArvore(Arvore *raiz) {
     *raiz = NULL;
 }
+
 /// Cria a árvore inicializando a raiz como NULL
 No* alocarNo(Item item) {
     No* novo = (No*)malloc(sizeof(No));
@@ -64,11 +62,11 @@ void mostrarArvore(Arvore raiz) {
     }
 }
 
-// Funcao que organiza os itens da árvore por tipo e os grava em arquivos correspondentes
+// Função que organiza os itens da árvore por tipo e os grava em arquivos correspondentes
 // Os itens são categorizados em tipos predefinidos (ex.: "fruta", "bebida") e gravados
 void organizarEGravarArvore(Arvore raiz) {
     const char *nomesArquivos[5] = {
-        "ListaFrutasArvore", "ListaBebidasArvore", "ListaDocesArvore", "ListaSalgadosArvore", "ListaEnlatadosArvore"
+        "ListaFrutasArvore.txt", "ListaBebidasArvore.txt", "ListaDocesArvore.txt", "ListaSalgadosArvore.txt", "ListaEnlatadosArvore.txt"
     };
 
     if (raiz == NULL)
@@ -78,11 +76,8 @@ void organizarEGravarArvore(Arvore raiz) {
 
     if (raiz->item.vencimento > 0) {
         const char *nomeArquivo = NULL; // Inicializa o nome do arquivo como NULL
-        // Verifica o tipo do item e define o nome do arquivo correspondente
         printf("Item: %s | Tipo detectado: [%s]\n", raiz->item.nome, raiz->item.tipo);
 
-        // "Conjunto de ifs" para verificar o tipo do item e definir o nome do arquivo correspondente
-        // Se o tipo do item for "fruta", grava no arquivo "ListaFrutasArvore" e por aí vai...
         if (strcmp(raiz->item.tipo, "fruta") == 0) nomeArquivo = nomesArquivos[0];
         else if (strcmp(raiz->item.tipo, "bebida") == 0) nomeArquivo = nomesArquivos[1];
         else if (strcmp(raiz->item.tipo, "doce") == 0) nomeArquivo = nomesArquivos[2];
@@ -93,11 +88,12 @@ void organizarEGravarArvore(Arvore raiz) {
         }
 
         if (nomeArquivo != NULL) {
-            FILE *arquivo = fopen(nomeArquivo, "ab"); // Se o nomeArquivo for diferente de NULL, abre o arquivo para gravação
+            FILE *arquivo = fopen(nomeArquivo, "a"); // Abre o arquivo para gravação em modo texto
             if (arquivo == NULL) {
                 printf("Erro ao abrir o arquivo %s para gravacao.\n", nomeArquivo);
             } else {
-                fwrite(&(raiz->item), sizeof(Item), 1, arquivo); // Se não for NULL, grava o item no arquivo (fwrite é responsável por gravar o item no arquivo)
+                fprintf(arquivo, "Nome: %s | Tipo: %s | Vencimento: %d | Setor: %s\n",
+                        raiz->item.nome, raiz->item.tipo, raiz->item.vencimento, raiz->item.setor);
                 fclose(arquivo); // Fecha o arquivo após a gravação
                 printf("Gravado: %s em %s\n", raiz->item.nome, nomeArquivo); // Exibe mensagem de sucesso
             }
@@ -106,36 +102,39 @@ void organizarEGravarArvore(Arvore raiz) {
 
     organizarEGravarArvore(raiz->dir); // Chamada recursiva para a subárvore direita
 }
+
 void removerItensVencidosArvore(const char *nomeArquivo) {
-    FILE *arquivoOriginal = fopen(nomeArquivo, "rb"); // Abre o arquivo original para leitura
-    FILE *arquivoTemp = fopen("temp.bin", "wb"); // Abre um arquivo temporário para gravação
-    Item item; // Declaração de um item para leitura e gravação
+    FILE *arquivoOriginal = fopen(nomeArquivo, "r"); // Abre o arquivo original para leitura
+    FILE *arquivoTemp = fopen("temp.txt", "w"); // Abre um arquivo temporário para gravação
+    Item item;
 
     if (arquivoOriginal == NULL || arquivoTemp == NULL) {
-        printf("Erro ao abrir arquivos para remocao.\n"); // Verifica se os arquivos foram abertos corretamente
+        printf("Erro ao abrir arquivos para remocao.\n");
         return;
     }
 
-    while (fread(&item, sizeof(Item), 1, arquivoOriginal) == 1) { // Enquanto houver itens no arquivo original, lê um item e grava no arquivo temporário
-        // Verifica se o item não está vencido (vencimento > 0) e grava no arquivo temporário
+    while (fscanf(arquivoOriginal, "Nome: %[^|]| Tipo: %[^|]| Vencimento: %d | Setor: %[^\n]\n",
+                  item.nome, item.tipo, &item.vencimento, item.setor) == 4) {
         if (item.vencimento > 0) {
-            fwrite(&item, sizeof(Item), 1, arquivoTemp); // Grava o item no arquivo temporário se não estiver vencido
+            fprintf(arquivoTemp, "Nome: %s | Tipo: %s | Vencimento: %d | Setor: %s\n",
+                    item.nome, item.tipo, item.vencimento, item.setor);
         }
     }
 
     fclose(arquivoOriginal);
     fclose(arquivoTemp);
     remove(nomeArquivo);
-    rename("temp.bin", nomeArquivo); // Remove o arquivo original e renomeia o temporário para o nome do original
+    rename("temp.txt", nomeArquivo); // Remove o arquivo original e renomeia o temporário para o nome do original
 }
 
 int contarItensNoArquivo(const char *nomeArquivo) {
-    FILE *arquivo = fopen(nomeArquivo, "rb"); // Abre o arquivo para leitura
-    if (arquivo == NULL) return 0; // Se o arquivo não existir, retorna 0
+    FILE *arquivo = fopen(nomeArquivo, "r"); // Abre o arquivo para leitura
+    if (arquivo == NULL) return 0;
 
     int contador = 0;
     Item item;
-    while (fread(&item, sizeof(Item), 1, arquivo) == 1) { // Enquanto houver itens no arquivo, lê um item e incrementa o contador
+    while (fscanf(arquivo, "Nome: %[^|]| Tipo: %[^|]| Vencimento: %d | Setor: %[^\n]\n",
+                  item.nome, item.tipo, &item.vencimento, item.setor) == 4) {
         contador++;
     }
     fclose(arquivo);
@@ -143,56 +142,55 @@ int contarItensNoArquivo(const char *nomeArquivo) {
 }
 
 Arvore carregarItensEmArvore(int *quantidadeLida) {
-    FILE *arquivo = fopen("ListaItens", "rb"); // Abre o arquivo "ListaItens" para leitura, onde estão os itens
+    FILE *arquivo = fopen("ListaItens.txt", "r"); // Abre o arquivo "ListaItens.txt" para leitura
     if (arquivo == NULL) return NULL;
 
-    Arvore raiz = NULL; // Inicializa a raiz da árvore como NULL
+    Arvore raiz = NULL;
     Item item;
-    *quantidadeLida = 0; // Inicializa a quantidade lida como 0
+    *quantidadeLida = 0;
 
-    // Enquanto houver itens no arquivo, lê um item e insere na árvore
-    while (fread(&item, sizeof(Item), 1, arquivo) == 1 && *quantidadeLida < MAX_ITENS_INSERIR) {
-        inserirItem(&raiz, item); // Insere o item na árvore e incrementa a quantidade lida
+    while (fscanf(arquivo, "Nome: %[^|]| Tipo: %[^|]| Vencimento: %d | Setor: %[^\n]\n",
+                  item.nome, item.tipo, &item.vencimento, item.setor) == 4 && *quantidadeLida < MAX_ITENS_INSERIR) {
+        inserirItem(&raiz, item);
         (*quantidadeLida)++;
     }
 
     fclose(arquivo);
-    return raiz; // Retorna a raiz da árvore com os itens carregados
+    return raiz;
 }
 
 void criarListaItensSeNaoExistir() {
-    FILE *arquivo = fopen("ListaItens", "rb"); // Tenta abrir o arquivo "ListaItens" para leitura
+    FILE *arquivo = fopen("ListaItens.txt", "r");
     if (arquivo != NULL) {
         fclose(arquivo);
         return;
     }
 
-    arquivo = fopen("ListaItens", "wb"); // Se o arquivo não existir, cria um novo arquivo para gravação
-    // Se o arquivo não puder ser criado, exibe mensagem de erro e retorna
+    arquivo = fopen("ListaItens.txt", "w");
     if (arquivo == NULL) {
-        printf("Erro ao criar ListaItens.\n");
+        printf("Erro ao criar ListaItens.txt.\n");
         return;
     }
 
     Item item;
-    const char *tipos[5] = {"fruta", "bebida", "doce", "salgado", "enlatado"}; // Tipos de itens predefinidos
-    // Inicializa o gerador de números aleatórios com a hora atual
+    const char *tipos[5] = {"fruta", "bebida", "doce", "salgado", "enlatado"};
     srand(time(NULL));
 
-    for (int i = 0; i < MAX_ITENS_INSERIR; i++) { // Gera itens aleatórios para o arquivo "ListaItens" quantidade definida em EstoqueMercadoArvore.h
-        int tipoIndex = i % 5; // Gera um índice aleatório para selecionar o tipo do item
-        strcpy(item.tipo, tipos[tipoIndex]); // Copia o tipo selecionado para o item
-        sprintf(item.nome, "Item_%d", i + 1); // Gera um nome para o item
-        item.vencimento = (i % 10 == 0) ? 0 : (1 + rand() % 30); // Gera uma data de vencimento aleatória entre 1 e 30 dias, ou 0 para itens vencidos
-        sprintf(item.setor, "Setor %c", 'A' + tipoIndex); // Gera um setor para o item baseado no índice do tipo
-        fwrite(&item, sizeof(Item), 1, arquivo); // Grava o item no arquivo
+    for (int i = 0; i < MAX_ITENS_INSERIR; i++) {
+        int tipoIndex = i % 5;
+        strcpy(item.tipo, tipos[tipoIndex]);
+        sprintf(item.nome, "Item_%d", i + 1);
+        item.vencimento = (i % 10 == 0) ? 0 : (1 + rand() % 30);
+        sprintf(item.setor, "Setor %c", 'A' + tipoIndex);
+        fprintf(arquivo, "Nome: %s | Tipo: %s | Vencimento: %d | Setor: %s\n",
+                item.nome, item.tipo, item.vencimento, item.setor);
     }
 
     fclose(arquivo);
 }
 
 void mostrarArquivo(const char *nomeArquivo) {
-    FILE *arquivo = fopen(nomeArquivo, "rb"); // Abre o arquivo para leitura
+    FILE *arquivo = fopen(nomeArquivo, "r");
     Item item;
 
     if (arquivo == NULL) {
@@ -201,8 +199,8 @@ void mostrarArquivo(const char *nomeArquivo) {
     }
 
     printf("Conteudo do arquivo %s:\n", nomeArquivo);
-    // Enquanto houver itens no arquivo, lê um item e exibe suas informações
-    while (fread(&item, sizeof(Item), 1, arquivo) == 1) {
+    while (fscanf(arquivo, "Nome: %[^|]| Tipo: %[^|]| Vencimento: %d | Setor: %[^\n]\n",
+                  item.nome, item.tipo, &item.vencimento, item.setor) == 4) {
         printf("Nome: %s | Tipo: %s | Vencimento: %d | Setor: %s\n",
                item.nome, item.tipo, item.vencimento, item.setor);
     }

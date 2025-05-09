@@ -6,9 +6,8 @@
           Jeovanni Conservani Da Silva,
           Khevyn Henrique G. T. Alves,
           Leonardo de Arruda Macedo
- * Data da última modificação: 08/05/2025
+ * Data da última modificação: 09/05/2025
  *****************************************************************************/
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,33 +18,36 @@ int main() {
     Arvore estoque;
     int quantidadeLida;
 
-    criarListaItensSeNaoExistir();
+    criarListaItensSeNaoExistir(); // Cria o arquivo "ListaItens.txt" se ele não existir
     estoque = carregarItensEmArvore(&quantidadeLida); // Carrega os itens da lista em uma árvore
 
     if (quantidadeLida == 0) {
         printf("Nenhum item foi carregado da ListaItens.\n");
     } else {
         printf("Itens carregados: %d\n", quantidadeLida);
-        organizarEGravarArvore(estoque);
+        organizarEGravarArvore(estoque); // Organiza os itens por tipo e grava em arquivos .txt
     }
-    // Variável para armazenar os nomes dos arquivos
+
+    // Nomes dos arquivos de saída para cada tipo de item
     const char *arquivos[5] = {
-        "ListaFrutasArvore", "ListaBebidasArvore", "ListaDocesArvore", "ListaSalgadosArvore", "ListaEnlatadosArvore"
+        "ListaFrutasArvore.txt", "ListaBebidasArvore.txt", "ListaDocesArvore.txt", "ListaSalgadosArvore.txt", "ListaEnlatadosArvore.txt"
     };
+
     // Mostra o conteúdo dos arquivos antes da remoção dos itens vencidos
+    printf("\nConteúdo dos arquivos antes da remoção dos itens vencidos:\n");
     for (int i = 0; i < 5; i++) {
         printf("\nArquivo: %s\n", arquivos[i]);
-        mostrarArquivo(arquivos[i]);
-        removerItensVencidosArvore(arquivos[i]);
+        mostrarArquivo(arquivos[i]); // Exibe o conteúdo do arquivo
+        removerItensVencidosArvore(arquivos[i]); // Remove itens vencidos do arquivo
     }
 
-    printf("\nApos remocao dos itens vencidos:\n");
     // Mostra o conteúdo dos arquivos após a remoção dos itens vencidos
+    printf("\nConteúdo dos arquivos após a remoção dos itens vencidos:\n");
     for (int i = 0; i < 5; i++) {
         printf("\nArquivo: %s\n", arquivos[i]);
-        mostrarArquivo(arquivos[i]); // Exibe o conteúdo do arquivo após a remoção dos itens vencidos
+        mostrarArquivo(arquivos[i]); // Exibe o conteúdo do arquivo após a remoção
     }
 
-    liberarArvore(estoque);
+    liberarArvore(estoque); // Libera a memória alocada para a árvore
     return 0;
 }
