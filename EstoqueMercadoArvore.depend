@@ -1,19 +1,19 @@
 # depslib dependency file v1.0
-1746752369 source:c:\users\rezee\onedrive\햞ea de trabalho\estoquemercadoarvore\estoquemercadoarvore.c
+1746885948 source:c:\users\rezee\onedrive\햞ea de trabalho\estoquemercadoarvore\estoquemercadoarvore.c
 	"EstoqueMercadoArvore.h"
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	<time.h>
 
-1746753055 c:\users\rezee\onedrive\햞ea de trabalho\estoquemercadoarvore\estoquemercadoarvore.h
+1746885293 c:\users\rezee\onedrive\햞ea de trabalho\estoquemercadoarvore\estoquemercadoarvore.h
 
-1746752369 source:c:\users\rezee\onedrive\햞ea de trabalho\estoquemercadoarvore\estoquemercadoarvoremain.c
+1746885337 source:c:\users\rezee\onedrive\햞ea de trabalho\estoquemercadoarvore\estoquemercadoarvoremain.c
 	<stdio.h>
 	<stdlib.h>
-	"EstoqueMercadoArvore.h"
+	"EstoqueMercadoArvore.c"
 
-1745601106 c:\users\rezee\onedrive\햞ea de trabalho\estoquemercadoarvore\estoquemercadoarvore.c
+1746885948 c:\users\rezee\onedrive\햞ea de trabalho\estoquemercadoarvore\estoquemercadoarvore.c
 	"EstoqueMercadoArvore.h"
 	<stdio.h>
 	<stdlib.h>

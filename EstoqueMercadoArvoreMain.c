@@ -11,43 +11,39 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "EstoqueMercadoArvore.h"
+#include "EstoqueMercadoArvore.c"
 
 int main() {
-    // Inicializa a árvore e a variável de quantidade lida
     Arvore estoque;
     int quantidadeLida;
 
-    criarListaItensSeNaoExistir(); // Cria o arquivo "ListaItens.txt" se ele não existir
-    estoque = carregarItensEmArvore(&quantidadeLida); // Carrega os itens da lista em uma árvore
+    criarListaItensSeNaoExistir();
+    estoque = carregarItensEmArvore(&quantidadeLida);
 
     if (quantidadeLida == 0) {
         printf("Nenhum item foi carregado da ListaItens.\n");
     } else {
         printf("Itens carregados: %d\n", quantidadeLida);
-        organizarEGravarArvore(estoque); // Organiza os itens por tipo e grava em arquivos .txt
+        organizarEGravarArvore(estoque);
     }
 
-    // Nomes dos arquivos de saída para cada tipo de item
     const char *arquivos[5] = {
         "ListaFrutasArvore.txt", "ListaBebidasArvore.txt", "ListaDocesArvore.txt", "ListaSalgadosArvore.txt", "ListaEnlatadosArvore.txt"
     };
 
-    // Mostra o conteúdo dos arquivos antes da remoção dos itens vencidos
-    printf("\nConteúdo dos arquivos antes da remoção dos itens vencidos:\n");
     for (int i = 0; i < 5; i++) {
         printf("\nArquivo: %s\n", arquivos[i]);
-        mostrarArquivo(arquivos[i]); // Exibe o conteúdo do arquivo
-        removerItensVencidosArvore(arquivos[i]); // Remove itens vencidos do arquivo
+        mostrarArquivo(arquivos[i]);
+        removerItensVencidosArvore(arquivos[i]);
     }
 
-    // Mostra o conteúdo dos arquivos após a remoção dos itens vencidos
-    printf("\nConteúdo dos arquivos após a remoção dos itens vencidos:\n");
+    printf("\nApos remocao dos itens vencidos:\n");
+
     for (int i = 0; i < 5; i++) {
         printf("\nArquivo: %s\n", arquivos[i]);
-        mostrarArquivo(arquivos[i]); // Exibe o conteúdo do arquivo após a remoção
+        mostrarArquivo(arquivos[i]);
     }
 
-    liberarArvore(estoque); // Libera a memória alocada para a árvore
+    liberarArvore(estoque);
     return 0;
 }

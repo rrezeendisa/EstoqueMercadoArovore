@@ -12,14 +12,12 @@
 
 
 
-#ifndef MERCADO_ARVORE_H // Verifica se o cabeçalho já foi incluído
-#define MERCADO_ARVORE_H // Se não, define o cabeçalho
+#ifndef MERCADO_ARVORE_H
+#define MERCADO_ARVORE_H
 
-#define MAX_ITENS_INSERIR 100000 // Definindo o número máximo de itens a serem inseridos na árvore
-#define MAX_ESTOQUE 10000 // Definindo o número máximo de itens no estoque
+#define MAX_ITENS_INSERIR 10000
+#define MAX_ESTOQUE 10000
 
-// Definindo a estrutura do item que será armazenado na árvore
-// Cada item contém informações como nome, tipo, data de vencimento e setor
 typedef struct Item {
     char nome[50];
     char tipo[20];
@@ -27,8 +25,6 @@ typedef struct Item {
     char setor[10];
 } Item;
 
-// Definindo a estrutura do nó da árvore binária de busca (ABB)
-// Cada nó contém um item e ponteiros para os nós esquerdo e direito
 typedef struct No {
     Item item;
     struct No *esq, *dir;
